@@ -49,3 +49,30 @@ export const authMiddleware = async(req,res,next)=>{
          )
      }
 }
+
+export const  checkAdmin = async(req,res,next)=>{
+        try{
+           const userId = req.body;
+           const user = await db.user.findUnique({
+                where:{
+                        id:userId
+                },
+                select:{
+                        role:true,
+
+                }
+           })
+           if(!user || user.role !==user.role.ADMIN){
+                return res.status(403).json({
+                        message:"Forebidden - You Do not have permission to access this code "
+                })
+           }
+           next();
+        }
+        catch(error){
+                console.log('error message' ,error);
+                return res.status(500).json({
+                        message:"incorrect creadentials"
+                })
+        }
+}
