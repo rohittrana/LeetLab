@@ -14,10 +14,8 @@ app.use(express.json());
 app.get('/',(req,res)=>{
                res.send("hey there")
 })
-
-
 app.use('/api/v1/auth',authRoutes);
-app.use('/api/v1/problem',problemRoutes);
+app.use('/api/v1/problems',problemRoutes);
 app.listen(port,()=>{
                console.log('YOUR CODE IS RUNNNIG ON PORT 8080');
 })

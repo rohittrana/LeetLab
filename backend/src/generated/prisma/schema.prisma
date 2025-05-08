@@ -20,8 +20,8 @@ enum UserRole {
 }
 
 enum Difficulty {
-  EASSY
-  MIDUM
+  EASY
+  MEDIUM
   HARD
 }
 
@@ -42,19 +42,20 @@ model Problem {
   title       String
   description String
   difficulty  Difficulty
-  tags        String[]
+  tags        String[] // ["tag1", "tag2", "tag3"]
   userId      String
-  example     Json
+  examples    Json
   constraints String
   hints       String?
-  editoral    String?
+  editorial   String?
 
-  testcases         Json
-  codeSnippets      Json
-  referenceSolution Json
+  testcases          Json // 
+  codeSnippets       Json
+  referenceSolutions Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  //  Relationship
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
