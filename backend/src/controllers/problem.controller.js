@@ -18,7 +18,6 @@ export const createProblem = async (req, res) => {
     referenceSolutions,
   } = req.body;
 
-
   try {
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
       const languageId = getJudge0LanguageId(language);
@@ -46,7 +45,7 @@ export const createProblem = async (req, res) => {
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
         console.log("Result-----", result);
-    
+
         if (result.status.id !== 3) {
           return res.status(400).json({
             error: `Testcase ${i + 1} failed for language ${language}`,
@@ -133,9 +132,9 @@ export const getProblemById = async (req, res) => {
   }
 };
 
-
 export const updateProblem = async (req, res) => {
-   const {title,
+  const {
+    title,
     description,
     tags,
     examples,
@@ -143,45 +142,42 @@ export const updateProblem = async (req, res) => {
     testcases,
     codeSnippets,
     referenceSolutions,
-    difficulty
-    
-   } =req.body;
-   try{
-           const existingProblem = await db.problem.findUnique({
-            where:{
-              id,
-            }
-           })
-           if(!existingProblem){
-                return res.status(404).json({error:"Problem not found"});
-
-           }
-           const updateProblem = await db.problem.update({
-            where:{id},
-            data:{
-              title,
-              description,
-              tags,
-              examples,
-              constraints,
-              testcases,
-              codeSnippets,
-              referenceSolutions,
-              difficulty,
-            }
-           })
-           return res.status(200).json({
-            success:true,
-            message:"Problem updated successfully",
-            problem:updateProblem,
-            
-           })
-   }catch(error){
-    console.log(error)
+    difficulty,
+  } = req.body;
+  try {
+    const existingProblem = await db.problem.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!existingProblem) {
+      return res.status(404).json({ error: "Problem not found" });
+    }
+    const updateProblem = await db.problem.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        tags,
+        examples,
+        constraints,
+        testcases,
+        codeSnippets,
+        referenceSolutions,
+        difficulty,
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Problem updated successfully",
+      problem: updateProblem,
+    });
+  } catch (error) {
+    console.log(error);
     return res.status(500).json({
-      error:`error while updating problem`
-    })
-   }
+      error: `error while updating problem`,
+    });
+  }
 };
 
 export const deleteProblem = async (req, res) => {
@@ -201,7 +197,7 @@ export const deleteProblem = async (req, res) => {
       message: "Problem deleted Successfully",
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res.status(500).json({
       error: "Error While deleting the problem",
     });
@@ -211,29 +207,29 @@ export const deleteProblem = async (req, res) => {
 export const getAllProblemsSolvedByUser = async (req, res) => {
   try {
     const problems = await db.problem.findMany({
-      where:{
-        solvedBy:{
-          some:{
-            userId:req.user.id
-          }
-        }
+      where: {
+        solvedBy: {
+          some: {
+            userId: req.user.id,
+          },
+        },
       },
-      include:{
-        solvedBy:{
-          where:{
-            userId:req.user.id
-          }
-        }
-      }
-    })
+      include: {
+        solvedBy: {
+          where: {
+            userId: req.user.id,
+          },
+        },
+      },
+    });
 
     res.status(200).json({
-      success:true,
-      message:"Problems fetched successfully",
-      problems
-    })
+      success: true,
+      message: "Problems fetched successfully",
+      problems,
+    });
   } catch (error) {
-    console.error("Error fetching problems :" , error);
-    res.status(500).json({error:"Failed to fetch problems"})
+    console.error("Error fetching problems :", error);
+    res.status(500).json({ error: "Failed to fetch problems" });
   }
 };
