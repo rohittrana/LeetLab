@@ -14,6 +14,7 @@ export const createProblem = async (req, res) => {
     examples,
     constraints,
     testcases,
+
     codeSnippets,
     referenceSolutions,
   } = req.body;
@@ -120,7 +121,7 @@ export const getProblemById = async (req, res) => {
     }
 
     return res.status(200).json({
-      sucess: true,
+      success: true,
       message: "Message Created Successfully",
       problem,
     });
