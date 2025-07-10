@@ -1,9 +1,12 @@
 import { Code, Terminal, FileCode, Braces } from "lucide-react"
 import { useEffect, useState } from "react"
 
-const AuthImagePattern = ({ title, subtitle }) => {
+
+
+const CodeBackground = ({ title, subtitle }) => {
   const [activeIndex, setActiveIndex] = useState(0)
 
+  // Code snippets to display in the background
   const codeSnippets = [
     `function twoSum(nums, target) {
   const map = new Map();
@@ -55,6 +58,7 @@ function reverseList(head) {
 }`,
   ]
 
+  // Rotate through code snippets
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % codeSnippets.length)
@@ -64,6 +68,7 @@ function reverseList(head) {
 
   return (
     <div className="hidden lg:flex flex-col items-center justify-center bg-slate-900 text-white p-12 relative overflow-hidden">
+      {/* Animated code symbols in background */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-[10%] left-[15%] animate-pulse">
           <Braces size={40} />
@@ -86,7 +91,9 @@ function reverseList(head) {
       </div>
 
       <div className="z-10 max-w-md flex flex-col items-center">
+        {/* Code editor mockup */}
         <div className="w-full bg-slate-800 rounded-lg shadow-xl mb-8 overflow-hidden">
+          {/* Editor header */}
           <div className="bg-slate-700 px-4 py-2 flex items-center">
             <div className="flex space-x-2 mr-4">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -95,20 +102,26 @@ function reverseList(head) {
             </div>
             <div className="text-xs font-mono opacity-70">problem.js</div>
           </div>
+
+          {/* Code content */}
           <div className="p-4 font-mono text-xs sm:text-sm overflow-hidden relative h-64">
             <pre className="whitespace-pre-wrap text-green-400 transition-opacity duration-1000">
               {codeSnippets[activeIndex]}
             </pre>
+
+            {/* Blinking cursor */}
             <div className="absolute bottom-4 right-4 w-2 h-4 bg-white animate-blink"></div>
           </div>
         </div>
 
+        {/* Logo */}
         <div className="flex items-center justify-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-primary/10  flex items-center justify-center">
             <Code className="w-6 h-6 text-primary" />
           </div>
         </div>
 
+        {/* Text content */}
         <h2 className="text-2xl font-bold mb-4 text-center">{title}</h2>
         <p className="text-slate-300 text-center">{subtitle}</p>
       </div>
@@ -116,4 +129,4 @@ function reverseList(head) {
   )
 }
 
-export default AuthImagePattern;
+export default CodeBackground
