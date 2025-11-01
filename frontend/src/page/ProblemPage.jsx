@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useProblemStore } from "../store/useProblemStore";
-import { getLanguageId } from "../lib/lang";
+import { getLanguageId } from "../lib/lang.js";
 import { useExecutionStore } from "../store/useExecutionStore";
 import { useSubmissionStore } from "../store/useSubmissionStore";
 import Submission from "../components/Submission";
