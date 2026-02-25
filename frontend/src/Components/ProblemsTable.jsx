@@ -7,7 +7,6 @@ import AddToPlaylistModal from "./AddToPlaylistModal";
 import CreatePlaylistModal from "./CreatePlaylistModal";
 import { usePlaylistStore } from "../store/usePlaylistStore";
 
-
 const ProblemsTable = ({ problems }) => {
   const { authUser } = useAuthStore();
   const { onDeleteProblem } = useActions();
@@ -17,7 +16,8 @@ const ProblemsTable = ({ problems }) => {
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
+    useState(false);
   const [selectedProblemId, setSelectedProblemId] = useState(null);
 
   // Extract all unique tags from problems
@@ -35,13 +35,13 @@ const ProblemsTable = ({ problems }) => {
   const filteredProblems = useMemo(() => {
     return (problems || [])
       .filter((problem) =>
-        problem.title.toLowerCase().includes(search.toLowerCase())
+        problem.title.toLowerCase().includes(search.toLowerCase()),
       )
       .filter((problem) =>
-        difficulty === "ALL" ? true : problem.difficulty === difficulty
+        difficulty === "ALL" ? true : problem.difficulty === difficulty,
       )
       .filter((problem) =>
-        selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
+        selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag),
       );
   }, [problems, search, difficulty, selectedTag]);
 
@@ -51,7 +51,7 @@ const ProblemsTable = ({ problems }) => {
   const paginatedProblems = useMemo(() => {
     return filteredProblems.slice(
       (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
+      currentPage * itemsPerPage,
     );
   }, [filteredProblems, currentPage]);
 
@@ -132,9 +132,10 @@ const ProblemsTable = ({ problems }) => {
           <tbody>
             {paginatedProblems.length > 0 ? (
               paginatedProblems.map((problem) => {
-                const isSolved = problem.solvedBy.some(
-                  (user) => user.userId === authUser?.id
-                );
+                const isSolved =
+                  problem.solvedBy?.some(
+                    (user) => user.userId === authUser?.id,
+                  ) || false;
                 return (
                   <tr key={problem.id}>
                     <td>
@@ -146,7 +147,10 @@ const ProblemsTable = ({ problems }) => {
                       />
                     </td>
                     <td>
-                      <Link to={`/problem/${problem.id}`} className="font-semibold hover:underline">
+                      <Link
+                        to={`/problem/${problem.id}`}
+                        className="font-semibold hover:underline"
+                      >
                         {problem.title}
                       </Link>
                     </td>
@@ -168,8 +172,8 @@ const ProblemsTable = ({ problems }) => {
                           problem.difficulty === "EASY"
                             ? "badge-success"
                             : problem.difficulty === "MEDIUM"
-                            ? "badge-warning"
-                            : "badge-error"
+                              ? "badge-warning"
+                              : "badge-error"
                         }`}
                       >
                         {problem.difficulty}
@@ -195,7 +199,9 @@ const ProblemsTable = ({ problems }) => {
                           onClick={() => handleAddToPlaylist(problem.id)}
                         >
                           <Bookmark className="w-4 h-4" />
-                          <span className="hidden sm:inline">Save to Playlist</span>
+                          <span className="hidden sm:inline">
+                            Save to Playlist
+                          </span>
                         </button>
                       </div>
                     </td>
@@ -240,7 +246,7 @@ const ProblemsTable = ({ problems }) => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreatePlaylist}
       />
-      
+
       <AddToPlaylistModal
         isOpen={isAddToPlaylistModalOpen}
         onClose={() => setIsAddToPlaylistModalOpen(false)}

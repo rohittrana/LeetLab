@@ -32,8 +32,7 @@ export const executeCode = async (req, res) => {
 
     // 3. Send batch of submissions to judge0
     const submitResponse = await submitBatch(submissions);
-
-    const tokens = submitResponse.map((res) => res.token);
+    const tokens = submitResponse.map((r) => r.token);
 
     // 4. Poll judge0 for results of all submitted test cases
     const results = await pollBatchResults(tokens);
@@ -98,49 +97,48 @@ export const executeCode = async (req, res) => {
     });
 
     // If All passed = true mark problem as solved for the current user
-    if(allPassed){
+    if (allPassed) {
       await db.problemSolved.upsert({
-        where:{
-          userId_problemId:{
+        where: {
+          userId_problemId: {
             userId,
             problemId,
-
-          }
+          },
         },
-        update:{},
-        create:{
-             userId,
-             problemId,
-        }
-      })
+        update: {},
+        create: {
+          userId,
+          problemId,
+        },
+      });
     }
-    const testCaseResults = detailedResults.map((result)=>({
-      submissionId:submission.id,
-      testCase:result.testCase,
-      passed : result.passed,
-      stdout : result.stdout,
-      expected : result.expected,
-      stderr : result.stderr,
-      compileOutput : result.compile_output,
-      status : result.status,
-      memory : result.memory,
-      time : result.time,
-    }))
+    const testCaseResults = detailedResults.map((result) => ({
+      submissionId: submission.id,
+      testCase: result.testCase,
+      passed: result.passed,
+      stdout: result.stdout,
+      expected: result.expected,
+      stderr: result.stderr,
+      compileOutput: result.compile_output,
+      status: result.status,
+      memory: result.memory,
+      time: result.time,
+    }));
     await db.testCaseResult.createMany({
-      data:testCaseResults,
-    })
+      data: testCaseResults,
+    });
     const submissionWithTestCase = await db.submission.findUnique({
-      where:{
+      where: {
         id: submission.id,
       },
-      include:{
-        testCase:true,
-      }
+      include: {
+        testCase: true,
+      },
     });
     res.status(200).json({
       success: true,
       message: "Code Executed! Successfully!",
-      submission : submissionWithTestCase,
+      submission: submissionWithTestCase,
     });
   } catch (error) {
     console.error("Error executing code:", error.message);

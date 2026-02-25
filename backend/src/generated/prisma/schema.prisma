@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -13,6 +7,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// ===============================
+// ENUMS
+// ===============================
 
 enum UserRole {
   ADMIN
@@ -25,6 +23,18 @@ enum Difficulty {
   HARD
 }
 
+enum SubmissionStatus {
+  ACCEPTED
+  WRONG_ANSWER
+  TLE
+  RUNTIME_ERROR
+  COMPILATION_ERROR
+}
+
+// ===============================
+// USER
+// ===============================
+
 model User {
   id        String   @id @default(uuid())
   name      String?
@@ -32,71 +42,96 @@ model User {
   image     String?
   role      UserRole @default(USER)
   password  String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  problem       Problem[]
-  submission    Submission[]
-  problemSolved ProblemSolved[]
-  playlists     Playlist[]
+  problems        Problem[]
+  submissions     Submission[]
+  problemsSolved  ProblemSolved[]
+  playlists       Playlist[]
+
+  @@index([email])
 }
+
+// ===============================
+// PROBLEM
+// ===============================
 
 model Problem {
   id          String     @id @default(uuid())
   title       String
   description String
   difficulty  Difficulty
-  tags        String[] // ["tag1", "tag2", "tag3"]
-  userId      String
+  tags        String[]
   examples    Json
   constraints String
   hints       String?
   editorial   String?
 
-  testcases          Json // 
+  testcases          Json
   codeSnippets       Json
   referenceSolutions Json
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  submissions       Submission[]
+  solvedBy          ProblemSolved[]
+  problemsPlaylists ProblemInPlaylist[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  //  Relationship
-  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  submission        Submission[]
-  solvedBy          ProblemSolved[]
-  problemsPlaylists ProblemInPlaylist[]
+  @@index([userId])
+  @@index([difficulty])
 }
 
+// ===============================
+// SUBMISSION
+// ===============================
+
 model Submission {
-  id            String   @id @default(uuid())
-  userId        String
-  problemId     String
-  sourceCode    Json
-  language      String
+  id         String            @id @default(uuid())
+  userId     String
+  problemId  String
+  sourceCode Json
+  language   String
+
   stdin         String?
   stdout        String?
   stderr        String?
   compileOutput String?
-  Status        String // Accepted , wrong answer
-  memory        String?
-  time          String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+
+  status SubmissionStatus
+  memory String?
+  time   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   testCases TestCaseResult[]
+
+  @@index([userId])
+  @@index([problemId])
 }
 
+// ===============================
+// TEST CASE RESULT
+// ===============================
+
 model TestCaseResult {
-  id            String  @id @default(uuid())
+  id            String @id @default(uuid())
   submissionId  String
   testCase      Int
   passed        Boolean
+
   stdout        String?
   expected      String
-  sterr         String?
+  stderr        String?
   compileOutput String?
   status        String
   memory        String?
@@ -110,43 +145,66 @@ model TestCaseResult {
   @@index([submissionId])
 }
 
+// ===============================
+// PROBLEM SOLVED
+// ===============================
+
 model ProblemSolved {
   id        String   @id @default(uuid())
   userId    String
   problemId String
+
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   @@unique([userId, problemId])
+  @@index([userId])
+  @@index([problemId])
 }
 
+// ===============================
+// PLAYLIST
+// ===============================
+
 model Playlist {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
-  userId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isPublic    Boolean @default(false)
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   problems ProblemInPlaylist[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([name, userId])
+  @@index([userId])
 }
 
+// ===============================
+// PROBLEM IN PLAYLIST (JUNCTION)
+// ===============================
+
 model ProblemInPlaylist {
-  id         String   @id @default(uuid())
+  id         String @id @default(uuid())
   playListId String
   problemId  String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+
+  order Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   playlist Playlist @relation(fields: [playListId], references: [id], onDelete: Cascade)
   problem  Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   @@unique([playListId, problemId])
+  @@index([playListId])
+  @@index([problemId])
 }

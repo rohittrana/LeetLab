@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { useState } from 'react';
-import {axiosInstance} from "../lib/axios"
+import { axiosInstance } from "../Lib/axios.js"
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
 
