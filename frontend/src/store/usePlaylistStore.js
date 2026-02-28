@@ -11,15 +11,10 @@ export const usePlaylistStore = create((set, get) => ({
   createPlaylist: async (playlistData) => {
     try {
       set({ isLoading: true });
-      const response = await axiosInstance.post(
-        "/playlist/create-playlist",
-        playlistData
-      );
-
+      const response = await axiosInstance.post("/playlist/create-playlist", playlistData);
       set((state) => ({
         playlists: [...state.playlists, response.data.playList],
       }));
-
       toast.success("Playlist created successfully");
       return response.data.playList;
     } catch (error) {
@@ -60,13 +55,8 @@ export const usePlaylistStore = create((set, get) => ({
   addProblemToPlaylist: async (playlistId, problemIds) => {
     try {
       set({ isLoading: true });
-      await axiosInstance.post(`/playlist/${playlistId}/add-problem`, {
-        problemIds,
-      });
-
+      await axiosInstance.post(`/playlist/${playlistId}/add-problem`, { problemIds });
       toast.success("Problem added to playlist");
-
-      // Refresh the playlist details
       if (get().currentPlaylist?.id === playlistId) {
         await get().getPlaylistDetails(playlistId);
       }
@@ -81,13 +71,8 @@ export const usePlaylistStore = create((set, get) => ({
   removeProblemFromPlaylist: async (playlistId, problemIds) => {
     try {
       set({ isLoading: true });
-      await axiosInstance.post(`/playlist/${playlistId}/remove-problems`, {
-        problemIds,
-      });
-
+      await axiosInstance.post(`/playlist/${playlistId}/remove-problems`, { problemIds });
       toast.success("Problem removed from playlist");
-
-      // Refresh the playlist details
       if (get().currentPlaylist?.id === playlistId) {
         await get().getPlaylistDetails(playlistId);
       }
@@ -103,11 +88,9 @@ export const usePlaylistStore = create((set, get) => ({
     try {
       set({ isLoading: true });
       await axiosInstance.delete(`/playlist/${playlistId}`);
-
       set((state) => ({
         playlists: state.playlists.filter((p) => p.id !== playlistId),
       }));
-
       toast.success("Playlist deleted successfully");
     } catch (error) {
       console.error("Error deleting playlist:", error);
