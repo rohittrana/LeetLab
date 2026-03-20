@@ -11,6 +11,8 @@ import ProblemPage from "./page/ProblemPage";
 import LandingPage from "./page/LandingPage";
 import PlaylistPage from "./page/PlaylistPage";
 import PlaylistDetailPage from "./page/PlaylistDetailPage";
+import LeaderboardPage from "./page/LeaderboardPage";   // ✅ NEW
+
 import Layout from "./layout/Layout";
 import AdminRoute from "./Components/AdminRoute";
 import { useAuthStore } from "./store/useAuthStore";
@@ -24,8 +26,8 @@ const App = () => {
 
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="animate-spin size-10" />
+      <div className="flex items-center justify-center h-screen bg-[#050a0a]">
+        <Loader className="animate-spin size-10 text-[#00ff88]" />
       </div>
     );
   }
@@ -35,11 +37,17 @@ const App = () => {
       <Toaster position="top-right" />
 
       <Routes>
-        {/* Public Landing Page */}
+
+        {/* Landing Page */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Protected Routes Wrapped in Layout */}
+        {/* Pages inside Layout (Navbar etc) */}
         <Route element={<Layout />}>
+
+          {/* Leaderboard (PUBLIC) */}
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+
+          {/* Protected Pages */}
           <Route
             path="/home"
             element={authUser ? <HomePage /> : <Navigate to="/login" />}
@@ -51,13 +59,13 @@ const App = () => {
           />
 
           <Route
-            path="/playlists"
-            element={authUser ? <PlaylistPage /> : <Navigate to="/login" />}
+            path="/problem/:id"
+            element={authUser ? <ProblemPage /> : <Navigate to="/login" />}
           />
 
           <Route
-            path="/problem/:id"
-            element={authUser ? <ProblemPage /> : <Navigate to="/login" />}
+            path="/playlists"
+            element={authUser ? <PlaylistPage /> : <Navigate to="/login" />}
           />
 
           <Route
@@ -69,6 +77,7 @@ const App = () => {
           <Route element={<AdminRoute />}>
             <Route path="/add-problem" element={<AddProblem />} />
           </Route>
+
         </Route>
 
         {/* Auth Pages */}
@@ -84,6 +93,7 @@ const App = () => {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
+
       </Routes>
     </>
   );
